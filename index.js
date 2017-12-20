@@ -144,7 +144,7 @@ bot.on('message', (msg) => {
                                             db.update({order_id: data.data.order_id, order_status:new_status, address: addresses, stage:3}, {where: {userId: id}}).then(()=>{
                                                 let statusInterval = setInterval(()=> {
                                                     var options = { method: 'get',
-                                                        url: 'https://api.taxi.namba1.co/order/status/'+data.data.order_id,
+                                                        url: 'https://api.taxi.namba1.co/order/status/4',//+data.data.order_id,
                                                         headers: 
                                                         { 'content-type': 'application/x-www-form-urlencoded' }
                                                     };
@@ -155,7 +155,7 @@ bot.on('message', (msg) => {
                                                             let driver; 
                                                             let trip_cost;
                                                             let options;
-                                                            console.log(data.data.status)
+                                                            let avaible_statuses = ['Received', 'The taxi arrived', 'Client has been picked up', 'Completed', 'Rejected'];
                                                             switch (data.data.status) {
                                                                 case 'Received': 
                                                                     status = 'Такси выехало'; 
@@ -187,7 +187,17 @@ bot.on('message', (msg) => {
                                                                     };
                                                                     clearInterval(statusInterval);                                 
                                                                     break;
-                                                                case 'Rejected': status = 'Отменен'; clearInterval(statusInterval); break;
+                                                                case 'Rejected': 
+                                                                    status = 'Отменен'; 
+                                                                    options = {
+                                                                        "parse_mode": "Markdown",
+                                                                        "reply_markup": JSON.stringify({
+                                                                            "keyboard": [[{ text: 'Завершить'}]],
+                                                                            "resize_keyboard":true
+                                                                        })
+                                                                    };
+                                                                    clearInterval(statusInterval); 
+                                                                break;
                                                             }
                                                             let message = 'Статус: ' + status + '\n' + 
                                                             (driver ? 'Водитель:\nНомер: '+ driver.phone_number+'\nБорт: '+driver.cab_number +'\nГос. номер: '+driver.license_plate +'\nМашина: '+driver.make:'') +
@@ -196,7 +206,7 @@ bot.on('message', (msg) => {
                                                                 if (user_interval.order_id === null ) {
                                                                     return clearInterval(statusInterval);
                                                                 }
-                                                                if(user_interval.order_status !== data.data.status && user_interval.order_status!== null) {
+                                                                if(user_interval.order_status !== data.data.status && user_interval.order_status!== null && avaible_statuses.includes(data.data.status)) {
                                                                     db.update({order_status: data.data.status}, {where: {userId: id}})
                                                                     return bot.sendMessage(chatId, message,options);
                                                                 }
@@ -274,7 +284,7 @@ bot.on('message', (msg) => {
                                         db.update({order_id: data.data.order_id, order_status:new_status, address: addresses, stage:3}, {where: {userId: id}}).then(()=>{
                                             let statusInterval = setInterval(()=> {
                                                 var options = { method: 'get',
-                                                    url: 'https://api.taxi.namba1.co/order/status/' + data.data.order_id,
+                                                    url: 'https://api.taxi.namba1.co/order/status/4', //+ data.data.order_id,
                                                     headers: 
                                                     { 'content-type': 'application/x-www-form-urlencoded' }
                                                 };
@@ -317,7 +327,17 @@ bot.on('message', (msg) => {
                                                                 };
                                                                 clearInterval(statusInterval);                                 
                                                                 break;
-                                                            case 'Rejected': status = 'Отменен'; clearInterval(statusInterval); break;
+                                                            case 'Rejected': 
+                                                                status = 'Отменен'; 
+                                                                options = {
+                                                                    "parse_mode": "Markdown",
+                                                                    "reply_markup": JSON.stringify({
+                                                                        "keyboard": [[{ text: 'Завершить'}]],
+                                                                        "resize_keyboard":true
+                                                                    })
+                                                                };
+                                                                clearInterval(statusInterval); 
+                                                            break;
                                                         }
                                                         let message = 'Статус: ' + status + '\n' + 
                                                         (driver ? 'Водитель:\nНомер: '+ driver.phone_number+'\nБорт: '+driver.cab_number +'\nГос. номер: '+driver.license_plate +'\nМашина: '+driver.make:'') +

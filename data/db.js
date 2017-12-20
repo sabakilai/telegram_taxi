@@ -1,5 +1,5 @@
 var Sequelize = require("sequelize");
-var sequelize = new Sequelize("telegram", "root", "12345", {
+var sequelize = new Sequelize("telegram", "root", "root", {
 	host: '127.0.0.1',
 	dialect: "mysql"
 });
