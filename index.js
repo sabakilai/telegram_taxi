@@ -93,13 +93,7 @@ bot.on('message', (msg) => {
                                 var options = {
                                     "parse_mode": "Markdown",
                                     "reply_markup": JSON.stringify({
-                                        "keyboard": [
-                                            menus.slice(0,2),
-                                            menus.slice(2,4),
-                                            menus.slice(4,6)
-                                        ],
-                                        "one_time_keyboard" : true,
-                                        "resize_keyboard":true
+                                        hide_keyboard: true
                                     })
                                 };
                                 return bot.sendMessage(chatId, "Номер "+(msg.contact ? '+'+ msg.contact.phone_number : msg.text) +" выбран. Для создания нового заказа прикрепите свое местоположение или наберите адрес вручную.", options);
@@ -144,7 +138,7 @@ bot.on('message', (msg) => {
                                             db.update({order_id: data.data.order_id, order_status:new_status, address: addresses, stage:3}, {where: {userId: id}}).then(()=>{
                                                 let statusInterval = setInterval(()=> {
                                                     var options = { method: 'get',
-                                                        url: 'https://api.taxi.namba1.co/order/status/4',//+data.data.order_id,
+                                                        url: 'https://api.taxi.namba1.co/order/status/'+data.data.order_id,
                                                         headers: 
                                                         { 'content-type': 'application/x-www-form-urlencoded' }
                                                     };
@@ -284,7 +278,7 @@ bot.on('message', (msg) => {
                                         db.update({order_id: data.data.order_id, order_status:new_status, address: addresses, stage:3}, {where: {userId: id}}).then(()=>{
                                             let statusInterval = setInterval(()=> {
                                                 var options = { method: 'get',
-                                                    url: 'https://api.taxi.namba1.co/order/status/4', //+ data.data.order_id,
+                                                    url: 'https://api.taxi.namba1.co/order/status/' + data.data.order_id,
                                                     headers: 
                                                     { 'content-type': 'application/x-www-form-urlencoded' }
                                                 };
